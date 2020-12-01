@@ -1,0 +1,9 @@
+pandas
+numpy
+codecs
+tqdm
+pickle
+opencv-python
+opencv-contrib-python
+keras
+tensorflow
