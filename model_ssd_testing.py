@@ -3,7 +3,6 @@ from mxnet import autograd, contrib, gluon, image, init, nd
 from mxnet.gluon import loss as gloss, nn
 import time
 
-
 def cls_predictor(num_anchors, num_classes):
     """Predictor layer
     For each anchor(box), we need to generate num_clases+1 predictions
@@ -15,40 +14,31 @@ def cls_predictor(num_anchors, num_classes):
     Returns:
         [type]: Input.shape=Output.shape
     """
-    return Conv2D(num_anchors*(num_classes+1), kernel_size=3, padding=1)
+    return nn.Conv2D(num_anchors*(num_classes+1), kernel_size=3, padding=1)
 
 def forward(x, block):
-    """Sanity check
-
-    Args:
-        x ([type]): [description]
-        block ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
     block.initialize()
     return block(x)
 """(2, 8, 20, 20)-->(batch_size, num_channels, feature_map_width, feature_map_height)
 """
-Y1=forward(nd.zeros((2, 8, 20, 20)),cls_predictor(5, 10))#Output--> (2L, 55L, 20L, 20L); 55=num_anchors*(num_clases+1)
-Y1=forward(nd.zeros((2, 16, 10, 10)),cls_predictor(3, 10))#Output--> (2L, 33L, 10L, 10L); 33=num_anchors*(num_clases+1)
-
+Y1 = forward(nd.zeros((2, 8, 20, 20)), cls_predictor(5, 10))#Output--> (2L, 55L, 20L, 20L); 55=num_anchors*(num_clases+1)
+Y2 = forward(nd.zeros((2, 16, 10, 10)), cls_predictor(3, 10))#Output--> (2L, 33L, 10L, 10L); 33=num_anchors*(num_clases+1)
+print((Y1.shape, Y2.shape))
 
 #Concatenating predictions for multiple scales
 
 def flatten_pred(pred):
     return pred.transpose((0, 2, 3, 1)).flatten()
 
-def concat_preds(pred):
-    return nd.concat(*[flatten_pred(p for p in preds)], dim=1)
+def concat_preds(preds):
+    return nd.concat(*[flatten_pred(p) for p in preds], dim=1)
 
-concat_preds([Y1, Y2]).shape #(2L, 25300L)
+concat_preds([Y1, Y2]).shape
 
 #Bounding box prediction layer
 
 def bbox_predictor(num_anchors):
-    return Conv2D(num_anchors*4, kernel_size=3, padding=1) #same output shape as input shape
+    return nn.Conv2D(num_anchors*4, kernel_size=3, padding=1) #same output shape as input shape
 
 #Height and Widht Downsample block
 
@@ -121,32 +111,26 @@ num_anchors=len(sizes[0]) + len(ratios[0]) -1 #for each pixel it generates 4 anc
 
 
 class TinySSD(nn.Block):
-    """Will give you:
-            -anchor boxes we have
-            -class prediction
-            -bbox prediction
-
-    Args:
-        nn ([type]): [description]
-    """
     def __init__(self, num_classes, **kwargs):
-        super(TinySDD, self).__init__(**kwargs)
-        self.num_classes=num_classes
+        super(TinySSD, self).__init__(**kwargs)
+        self.num_classes = num_classes
         for i in range(5):
-            #setattr == self.blk_i=get_blk(i), para no ensuciar
+            # The assignment statement is self.blk_i = get_blk(i).
             setattr(self, 'blk_%d' % i, get_blk(i))
-            setattr(self, 'cls_%d' % i,cls_predictor(num_anchors, num_classes))
-            setattr(self, 'bbox_%d' % i,bbox_predictor(num_anchors))
+            setattr(self, 'cls_%d' % i, cls_predictor(num_anchors, num_classes))
+            setattr(self, 'bbox_%d' % i, bbox_predictor(num_anchors))
 
     def forward(self, X):
-        anchors, cls_preds, bbox_preds= [None] * 5, [None] * 5, [None] * 5
+        anchors, cls_preds, bbox_preds = [None] * 5, [None] * 5, [None] * 5
         for i in range(5):
-            X, anchors[i], cls_preds[i], bbox_preds[i] = blk_forward(X, getattr(self, 'blk_ %d' % i), sizes[i], ratios[i], 
-                                                                        getattr(self, 'cls_%d' % i), getattr(self, 'bbox_%d' % i))
-        return (nd.concat(*anchors, dim=1), 
+            # getattr(self, 'blk_%d' % i) accesses self.blk_i.
+            X, anchors[i], cls_preds[i], bbox_preds[i] = blk_forward(
+                X, getattr(self, 'blk_%d' % i), sizes[i], ratios[i],
+                getattr(self, 'cls_%d' % i), getattr(self, 'bbox_%d' % i))
+        # In the reshape function, 0 indicates that the batch size remains unchanged.
+        return (nd.concat(*anchors, dim=1),
                 concat_preds(cls_preds).reshape(
-                    (0,-1, self.num_classes+1)),
-                concat_preds(bbox_preds))
+                    (0, -1, self.num_classes + 1)), concat_preds(bbox_preds))
 
 
 #sanity check. A total of (32² + 16² +8²+4²+1)*4= 5444 anchor boxes are generated for each image at the five scales
@@ -165,9 +149,8 @@ print('output bbox preds: ', bbox_preds.shape) #(32L, 21776L)
 
 
 #Training
-
 batch_size=32
-train_iter, _ = d2l.load_data_pikachu(batch_size)
+train_iter, _ = d2l.load_data_pikachu(batch_size) ##METER NUESTRO DATASET
 ctx, net = d2l.try_gpu(), TinySSD(num_classes=1)
 net.initialize(init=init.Xavier(), ctx=ctx)
 trainer= gluon.Trainer(net.collect_params(),'sgd', {'learning_rate':0.2, 'wd':5e-4})

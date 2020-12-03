@@ -3,3 +3,6 @@ numpy
 tqdm
 opencv-python
 opencv-contrib-python
+
+d2l
+mxnet
