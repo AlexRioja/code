@@ -33,6 +33,15 @@ def load_dataset(dataset_path, debug=False):
 
 
 def parse_data(data, debug=False):
+    """Parse data from the return of load_dataset
+
+    Args:
+        data (list): list containing on each position, the information of an image
+        debug (bool, optional): Set True to see debug info like image count or sample data. Defaults to False.
+
+    Returns:
+        list: Containing the information of the image and the data related to it.
+    """
     parsed_data=[]
     print("\nPlease wait while the images are being downloaded...")
     for row in tqdm(data):
