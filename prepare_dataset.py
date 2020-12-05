@@ -88,6 +88,7 @@ def save_images(parsed_data, debug=False):
         print("Example of information associated to an image: ")
         print(data_correlation[0])
     
+
 def save_images_2(parsed_data, debug=False):
     try:
         os.mkdir("dataset/images/")
@@ -101,8 +102,8 @@ def save_images_2(parsed_data, debug=False):
         img_path="dataset/images/"
         aux=[]
         for d in data[1]:
-            height = 300
-            width = 300
+            height = 256
+            width = 256
             points = d['points']
             
             if 'Face' in d['label']:
@@ -120,12 +121,54 @@ def save_images_2(parsed_data, debug=False):
     if debug:
         print("Example of information associated to an image: ")
         print(data_correlation[0])
+    return data_correlation
+
+
+def write_line(img, data):
+    A=4
+    B=5
+    id=1 #solo tenemos una clase (cara)
+    bboxes=[]
+    for d in data:
+        x1=d['x1']
+        x2=d['x2']
+        y1=d['y1']
+        y2=d['y2']
+        bboxes.append(d.items())
+        
+
+def create_RecordIO_format():
+    img_path="dataset/images/"
+    data_correlation= pickle.loads(open("dataset/data/data.pickle", "rb").read())
+    print("Formatting to RecordIO...")
+    with open('train.lst', 'w+') as f:  
+        for img, data in tqdm(enumerate(data_correlation)):
 
 
 
 
-data=load_dataset(path_2_json_dataset)
-parsed_data=parse_data(data, True)
-save_images_2(parsed_data, True)
+
+            f.write(  
+                str(i) + '\t' +  
+                # idx  
+                str(4) + '\t' + str(5) + '\t' +  
+                # width of header and width of each object.  
+                str(256) + '\t' + str(256) + '\t' +  
+                # (width, height)  
+                str(1) + '\t' +  
+                # class  
+                str((i / 10)) + '\t' + str((i / 10)) + '\t' + str(((i + 3) / 10)) + '\t' +str(((i + 3) / 10)) + '\t' +  
+                # xmin, ymin, xmax, ymax  
+            str(i) + '.jpg\n'
+            )
+
+
+eleccion=input("Descargar (1) o Parsear(2):")
+if eleccion==1:
+    data=load_dataset(path_2_json_dataset)
+    parsed_data=parse_data(data, True)
+    data_correlation=save_images_2(parsed_data, True)
+else:
+    create_RecordIO_format()
 
 print("\n\nDataset is ready!!!")

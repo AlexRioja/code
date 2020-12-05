@@ -146,7 +146,8 @@ print('output class preds: ', cls_preds.shape) #(32L, 5444L, 2L)
 print('output bbox preds: ', bbox_preds.shape) #(32L, 21776L)
 
 
-
+"""
+Amos a crear nuestro training
 
 #Training
 batch_size=32
@@ -154,6 +155,25 @@ train_iter, _ = d2l.load_data_pikachu(batch_size) ##METER NUESTRO DATASET
 ctx, net = d2l.try_gpu(), TinySSD(num_classes=1)
 net.initialize(init=init.Xavier(), ctx=ctx)
 trainer= gluon.Trainer(net.collect_params(),'sgd', {'learning_rate':0.2, 'wd':5e-4})
+"""
+
+batch_size=32
+edge_size=256
+train_iter = mxnet.image.ImageDetIter(batch_size=batch_size, #Number of examples per batch
+                                    data_shape=(3, edge_size, edge_size), #Data shape in (channels, height, width) format.
+                                    shuffle=True, #like a random picker(?)
+                                    rand_crop=1,
+                                    min_object_covered=0.95, max_attempts=200)
+
+
+
+
+
+
+
+
+
+
 
 
 #Define Losses
