@@ -10,6 +10,8 @@ import os
 import pickle
 from cv2 import cv2
 
+
+
 path_2_json_dataset="dataset/face_detection.json"
 
 def load_dataset(dataset_path, debug=False):
@@ -107,14 +109,20 @@ def save_images_2(parsed_data, debug=False):
             points = d['points']
             
             if 'Face' in d['label']:
+                """
                 x1 = round(width*points[0]['x'])
                 y1 = round(height*points[0]['y'])
                 x2 = round(width*points[1]['x'])
                 y2 = round(height*points[1]['y'])
+                """
+                x1 = points[0]['x']
+                y1 = points[0]['y']
+                x2 = points[1]['x']
+                y2 = points[1]['y']
                 aux2={"x1":x1,"y1":y1,"x2":x2,"y2":y2}
                 aux.append(aux2)
         data_correlation.append({"image":str(n)+ ".jpg", "data":aux})
-        cv2.imwrite(img_path+str(n)+ ".jpg", cv2.resize(data[0], (300, 300)))
+        cv2.imwrite(img_path+str(n)+ ".jpg", cv2.resize(data[0], (256, 256)))
         n+=1
     with open("dataset/data/data.pickle", "wb") as f:
         f.write(pickle.dumps(data_correlation))
@@ -124,46 +132,45 @@ def save_images_2(parsed_data, debug=False):
     return data_correlation
 
 
-def write_line(img, data):
+def write_line(l, i):
+    img_path="dataset/images/"+str(l['image'])
+    print(img_path)
     A=4
     B=5
     id=1 #solo tenemos una clase (cara)
-    bboxes=[]
-    for d in data:
+    labels=''
+    for d in l['data']:
         x1=d['x1']
         x2=d['x2']
         y1=d['y1']
         y2=d['y2']
-        bboxes.append(d.items())
+        labels+='1 '+str(x1)+' '+str(y1)+' '+str(x2)+' '+str(y2)+' '
+
+    line= '\t'+str(i)+' '+str(A)+' '+str(B)+' '+labels+img_path+'\n'
+    #print(line)
+    return line
         
 
 def create_RecordIO_format():
-    img_path="dataset/images/"
+    
     data_correlation= pickle.loads(open("dataset/data/data.pickle", "rb").read())
+    print(data_correlation[0])
     print("Formatting to RecordIO...")
+    i=0
     with open('train.lst', 'w+') as f:  
-        for img, data in tqdm(enumerate(data_correlation)):
+        for line in tqdm(data_correlation):
+            f.write(write_line(line, i))
+            i+=1
+    lst_dataset = LstDetection('train.lst', root=os.path.expanduser('.'))
+    print('length:', len(lst_dataset))
+    first_img = lst_dataset[0][0]
+    print('image shape:', first_img.shape)
+    print('Label example:')
+    print(lst_dataset[0][1])
+    print("GluonCV swaps bounding boxes to columns 0-3 by default")
 
 
-
-
-
-            f.write(  
-                str(i) + '\t' +  
-                # idx  
-                str(4) + '\t' + str(5) + '\t' +  
-                # width of header and width of each object.  
-                str(256) + '\t' + str(256) + '\t' +  
-                # (width, height)  
-                str(1) + '\t' +  
-                # class  
-                str((i / 10)) + '\t' + str((i / 10)) + '\t' + str(((i + 3) / 10)) + '\t' +str(((i + 3) / 10)) + '\t' +  
-                # xmin, ymin, xmax, ymax  
-            str(i) + '.jpg\n'
-            )
-
-
-eleccion=input("Descargar (1) o Parsear(2):")
+eleccion=int(input("Descargar (1) o Parsear(2):"))
 if eleccion==1:
     data=load_dataset(path_2_json_dataset)
     parsed_data=parse_data(data, True)
