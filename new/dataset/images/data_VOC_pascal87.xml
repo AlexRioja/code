@@ -1,0 +1,59 @@
+<annotation>
+    <folder>images</folder>
+    <filename>87.jpg</filename>
+    <path>/home/chatarra/Desktop/Proy_Final_INT_MACH_L/Test_SSD_or_F_RCNN/new/dataset/images/87.jpg</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>256</width>
+        <height>256</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>117</xmin>
+            <ymin>114</ymin>
+            <xmax>154</xmax>
+            <ymax>186</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>154</xmin>
+            <ymin>72</ymin>
+            <xmax>194</xmax>
+            <ymax>139</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>113</xmin>
+            <ymin>27</ymin>
+            <xmax>147</xmax>
+            <ymax>87</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>47</xmin>
+            <ymin>18</ymin>
+            <xmax>81</xmax>
+            <ymax>95</ymax>
+        </bndbox>
+    </object>
+</annotation>

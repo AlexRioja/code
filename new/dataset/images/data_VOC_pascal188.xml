@@ -1,0 +1,48 @@
+<annotation>
+    <folder>images</folder>
+    <filename>188.jpg</filename>
+    <path>/home/chatarra/Desktop/Proy_Final_INT_MACH_L/Test_SSD_or_F_RCNN/new/dataset/images/188.jpg</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>256</width>
+        <height>256</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>55</xmin>
+            <ymin>2</ymin>
+            <xmax>95</xmax>
+            <ymax>89</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>27</xmin>
+            <ymin>104</ymin>
+            <xmax>59</xmax>
+            <ymax>165</ymax>
+        </bndbox>
+    </object>    <object>
+        <name>face</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>148</xmin>
+            <ymin>24</ymin>
+            <xmax>199</xmax>
+            <ymax>118</ymax>
+        </bndbox>
+    </object>
+</annotation>

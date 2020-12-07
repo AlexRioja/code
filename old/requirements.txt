@@ -1,0 +1,11 @@
+pandas
+numpy
+tqdm
+opencv-python
+opencv-contrib-python
+gluoncv
+d2l
+mxnet
+mxnet-mkl
+mxnet-cu92
+mxnet-cu92mkl
